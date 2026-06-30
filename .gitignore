@@ -3,5 +3,7 @@ __pycache__/
 *.pkl
 *.csv
 *.db
+mlruns/
+mlartifacts/
 .streamlit/
 venv/

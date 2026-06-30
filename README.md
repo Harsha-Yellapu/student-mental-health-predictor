@@ -23,14 +23,14 @@ habits are driving the result. The model is served through an interactive
 
 ## Tech Stack
 
-`Python` · `scikit-learn` · `XGBoost` · `SHAP` · `Pandas` · `Streamlit`
+`Python` · `scikit-learn` · `XGBoost` · `SHAP` · `Pandas` · `Streamlit` · `MLflow`
 
 ## Project Structure
 
 ```
 student-mental-health-predictor/
 ├── generate_data.py      # Synthetic dataset generator (domain-informed)
-├── train_model.py        # Trains and evaluates the XGBoost model
+├── train_model.py        # Trains the XGBoost model + logs run to MLflow
 ├── app.py                 # Streamlit web application
 ├── requirements.txt
 └── README.md
@@ -47,9 +47,14 @@ student-mental-health-predictor/
    > fully reproducible without needing access to private student data.
 2. **Model**: `train_model.py` trains an XGBoost multi-class classifier,
    achieving **~84% test accuracy** (Low/Moderate/High).
-3. **Explainability**: SHAP TreeExplainer breaks down each prediction into
+3. **Experiment tracking**: Every training run is logged to **MLflow**
+   (params, accuracy, macro F1, classification report, and the model
+   artifact itself), using a local SQLite-backed tracking store
+   (`mlflow.db`). Run `mlflow ui --backend-store-uri sqlite:///mlflow.db`
+   to browse past runs, compare metrics, and inspect logged models.
+4. **Explainability**: SHAP TreeExplainer breaks down each prediction into
    per-feature contributions, shown as a bar chart in the app.
-4. **App**: `app.py` is a Streamlit interface where a user adjusts sliders
+5. **App**: `app.py` is a Streamlit interface where a user adjusts sliders
    for their habits and instantly sees their predicted risk, probability
    breakdown, SHAP explanation, and personalized tips.
 
@@ -61,8 +66,11 @@ cd student-mental-health-predictor
 pip install -r requirements.txt
 
 python generate_data.py     # creates student_mental_health_data.csv
-python train_model.py       # trains model.pkl, label_encoder.pkl, features.pkl
+python train_model.py       # trains model.pkl, label_encoder.pkl, features.pkl, logs to MLflow
 streamlit run app.py        # launches the web app
+
+# optional: view experiment tracking dashboard
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 ## Disclaimer
